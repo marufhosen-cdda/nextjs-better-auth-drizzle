@@ -7,7 +7,19 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!.open-next",
+      "!.wrangler",
+      "!dist",
+      "!build",
+      "!bun.lock",
+      "!cloudflare-env.d.ts",
+      "!drizzle/migrations",
+      "!preview.log"
+    ]
   },
   "formatter": {
     "enabled": true,

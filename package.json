@@ -4,24 +4,38 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
+    "preview": "opennextjs-cloudflare build && wrangler dev",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "db:generate": "drizzle-kit generate",
+    "auth:generate": "bun x auth@latest generate --output ./src/db/schema.ts --yes",
+    "db:migrate:local": "wrangler d1 migrations apply test-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply test-db --remote",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.6.15",
+    "@opennextjs/cloudflare": "^1.19.11",
+    "better-auth": "^1.6.15",
+    "drizzle-orm": "^0.45.2",
     "next": "16.2.7",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@cloudflare/workers-types": "^4.20260609.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.98.0"
   },
   "ignoreScripts": [
     "sharp",
