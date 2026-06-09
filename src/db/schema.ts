@@ -18,6 +18,9 @@ export const user = sqliteTable("user", {
     .notNull(),
   username: text("username").unique(),
   displayUsername: text("display_username"),
+  twoFactorEnabled: integer("two_factor_enabled", { mode: "boolean" }).default(
+    false,
+  ),
 });
 
 export const session = sqliteTable(
@@ -138,11 +141,29 @@ export const InterviewAnswer = sqliteTable("interview_answer", {
     .notNull(),
 });
 
+export const twoFactor = sqliteTable(
+  "two_factor",
+  {
+    id: text("id").primaryKey(),
+    secret: text("secret").notNull(),
+    backupCodes: text("backup_codes").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    verified: integer("verified", { mode: "boolean" }).default(true),
+  },
+  (table) => [
+    index("twoFactor_secret_idx").on(table.secret),
+    index("twoFactor_userId_idx").on(table.userId),
+  ],
+);
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   Interviews: many(Interview),
   InterviewAnswers: many(InterviewAnswer),
+  twoFactors: many(twoFactor),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -191,3 +212,10 @@ export const InterviewAnswerRelations = relations(
     }),
   }),
 );
+
+export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
+  user: one(user, {
+    fields: [twoFactor.userId],
+    references: [user.id],
+  }),
+}));

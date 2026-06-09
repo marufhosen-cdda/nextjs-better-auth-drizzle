@@ -4,7 +4,7 @@ import { interviewPlugin } from "@/plugin/interviewPlugin";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { openAPI, username } from "better-auth/plugins";
+import { openAPI, twoFactor, username } from "better-auth/plugins";
 
 export function getAuth() {
   return betterAuth({
@@ -18,7 +18,13 @@ export function getAuth() {
     emailAndPassword: {
       enabled: true,
     },
-    plugins: [username(), nextCookies(), openAPI(), interviewPlugin()],
+    rateLimit: {
+      enabled: true,
+      window: 10, //time window in seconds
+      max: 100, //max requests in that window
+      customRules: {}
+    },
+    plugins: [username(), nextCookies(), openAPI(), interviewPlugin(), twoFactor()],
   });
 }
 

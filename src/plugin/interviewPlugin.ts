@@ -6,20 +6,6 @@ const interviewPlugin = () => {
     return {
         id: "interview-plugin",
         schema: {
-            // user: {
-            //     fields: {
-            //         role: {
-            //             type: "string",
-            //             defaultValue: "candidate",
-            //         },
-            //         department: {
-            //             type: "string",
-            //         },
-            //         phone: {
-            //             type: "string",
-            //         },
-            //     },
-            // },
             interview: {
                 modelName: "Interview",
                 fields: {
