@@ -16,6 +16,7 @@ export const user = sqliteTable("user", {
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+  role: text("role").default("USER"),
   username: text("username").unique(),
   displayUsername: text("display_username"),
   twoFactorEnabled: integer("two_factor_enabled", { mode: "boolean" }).default(
@@ -91,6 +92,13 @@ export const verification = sqliteTable(
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
+
+export const role = sqliteTable("role", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  isSystem: integer("is_system", { mode: "boolean" }).default(false).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
 
 export const twoFactor = sqliteTable(
   "two_factor",
