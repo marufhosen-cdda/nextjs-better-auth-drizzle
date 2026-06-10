@@ -1,10 +1,9 @@
 import { getDb } from "@/db";
 import * as schema from "@/db/schema";
-import { interviewPlugin } from "@/plugin/interviewPlugin";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { openAPI, twoFactor, username } from "better-auth/plugins";
+import { captcha, openAPI, twoFactor, username } from "better-auth/plugins";
 
 export function getAuth() {
   return betterAuth({
@@ -24,7 +23,10 @@ export function getAuth() {
       max: 100, //max requests in that window
       customRules: {}
     },
-    plugins: [username(), nextCookies(), openAPI(), interviewPlugin(), twoFactor()],
+    plugins: [username(), nextCookies(), openAPI(), twoFactor(), captcha({
+      provider: "cloudflare-turnstile",
+      secretKey: process.env.TRANSTILE_SECRET_KEY as string,
+    })],
   });
 }
 

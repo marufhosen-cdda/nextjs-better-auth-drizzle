@@ -92,55 +92,6 @@ export const verification = sqliteTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const Interview = sqliteTable("interview", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  status: text("status").default("scheduled").notNull(),
-  scheduledAt: integer("scheduled_at", { mode: "timestamp_ms" }).notNull(),
-  endedAt: integer("ended_at", { mode: "timestamp_ms" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .$onUpdate(() => new Date())
-    .notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-});
-
-export const InterviewQuestion = sqliteTable("interview_question", {
-  id: text("id").primaryKey(),
-  questionText: text("question_text").notNull(),
-  category: text("category").notNull(),
-  weight: integer("weight").default(1).notNull(),
-  order: integer("order").default(0).notNull(),
-  interviewId: text("interview_id")
-    .notNull()
-    .references(() => Interview.id, { onDelete: "cascade" }),
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .notNull(),
-});
-
-export const InterviewAnswer = sqliteTable("interview_answer", {
-  id: text("id").primaryKey(),
-  answerText: text("answer_text").notNull(),
-  score: integer("score").notNull(),
-  notes: text("notes").notNull(),
-  questionId: text("question_id")
-    .notNull()
-    .references(() => InterviewQuestion.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .notNull(),
-});
-
 export const twoFactor = sqliteTable(
   "two_factor",
   {
@@ -161,8 +112,6 @@ export const twoFactor = sqliteTable(
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
-  Interviews: many(Interview),
-  InterviewAnswers: many(InterviewAnswer),
   twoFactors: many(twoFactor),
 }));
 
@@ -179,39 +128,6 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
-
-export const InterviewRelations = relations(Interview, ({ one, many }) => ({
-  user: one(user, {
-    fields: [Interview.userId],
-    references: [user.id],
-  }),
-  InterviewQuestions: many(InterviewQuestion),
-}));
-
-export const InterviewQuestionRelations = relations(
-  InterviewQuestion,
-  ({ one, many }) => ({
-    Interview: one(Interview, {
-      fields: [InterviewQuestion.interviewId],
-      references: [Interview.id],
-    }),
-    InterviewAnswers: many(InterviewAnswer),
-  }),
-);
-
-export const InterviewAnswerRelations = relations(
-  InterviewAnswer,
-  ({ one }) => ({
-    InterviewQuestion: one(InterviewQuestion, {
-      fields: [InterviewAnswer.questionId],
-      references: [InterviewQuestion.id],
-    }),
-    user: one(user, {
-      fields: [InterviewAnswer.userId],
-      references: [user.id],
-    }),
-  }),
-);
 
 export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
   user: one(user, {
