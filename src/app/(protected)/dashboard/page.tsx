@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Settings, LogOut, ShieldCheck, ShieldOff, Users } from "lucide-react";
+import { Settings, LogOut, ShieldCheck, ShieldOff, Users, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -44,13 +44,22 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex items-center gap-2">
           {user.role === "ADMIN" && (
-            <Link
-              href="/roles"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-            >
-              <Users className="mr-1.5 h-4 w-4" />
-              Roles
-            </Link>
+            <>
+              <Link
+                href="/roles"
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              >
+                <Users className="mr-1.5 h-4 w-4" />
+                Roles
+              </Link>
+              <Link
+                href="/permissions"
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              >
+                <Shield className="mr-1.5 h-4 w-4" />
+                Permissions
+              </Link>
+            </>
           )}
           <Link
             href="/settings"
