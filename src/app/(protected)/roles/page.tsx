@@ -22,7 +22,7 @@ type Role = {
   id: string;
   name: string;
   isSystem: boolean;
-  createdAt: string;
+  createdAt: Date;
 };
 
 type Modal =
@@ -47,9 +47,7 @@ export default function RolesPage() {
   const loadRoles = useCallback(async () => {
     setLoading(true);
     setFetchError("");
-    const { data, error } = await authClient.$fetch<{ roles: Role[] }>(
-      "/role-management/list",
-    );
+    const { data, error } = await authClient.roleManagement.list();
     if (error) {
       setFetchError((error as { message?: string }).message ?? "Failed to load roles");
     } else {
@@ -79,10 +77,7 @@ export default function RolesPage() {
     setPending(true);
     setError("");
     const name = String(new FormData(e.currentTarget).get("name") ?? "").trim();
-    const { error } = await authClient.$fetch("/role-management/create", {
-      method: "POST",
-      body: { name },
-    });
+    const { error } = await authClient.roleManagement.create({ name });
     if (error) {
       setError((error as { message?: string }).message ?? "Failed to create role");
       setPending(false);
@@ -99,10 +94,7 @@ export default function RolesPage() {
     setPending(true);
     setError("");
     const name = String(new FormData(e.currentTarget).get("name") ?? "").trim();
-    const { error } = await authClient.$fetch("/role-management/update", {
-      method: "POST",
-      body: { id: modal.role.id, name },
-    });
+    const { error } = await authClient.roleManagement.update({ id: modal.role.id, name });
     if (error) {
       setError((error as { message?: string }).message ?? "Failed to update role");
       setPending(false);
@@ -117,10 +109,7 @@ export default function RolesPage() {
     if (modal?.type !== "delete") return;
     setPending(true);
     setError("");
-    const { error } = await authClient.$fetch("/role-management/delete", {
-      method: "POST",
-      body: { id: modal.role.id },
-    });
+    const { error } = await authClient.roleManagement.delete({ id: modal.role.id });
     if (error) {
       setError((error as { message?: string }).message ?? "Failed to delete role");
       setPending(false);

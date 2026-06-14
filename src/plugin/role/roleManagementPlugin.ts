@@ -3,7 +3,7 @@ import { type SystemRole } from "./constants";
 import { roleEndpoints } from "./endpoints";
 import { seedSystemRoles } from "./seed";
 
-export const roleManagementPlugin = (): BetterAuthPlugin => ({
+export const roleManagementPlugin = () => ({
   id: "role-management",
   schema: {
     role: {
@@ -35,4 +35,4 @@ export const roleManagementPlugin = (): BetterAuthPlugin => ({
       }
     }
   },
-});
+}) satisfies BetterAuthPlugin;

@@ -2,7 +2,7 @@ import type { BetterAuthPlugin } from "better-auth";
 import { permissionEndpoints } from "./endpoints";
 import { seedPermissions } from "./seed";
 
-export const permissionManagementPlugin = (): BetterAuthPlugin => ({
+export const permissionManagementPlugin = () => ({
   id: "permission-management",
   schema: {
     permission: {
@@ -34,4 +34,4 @@ export const permissionManagementPlugin = (): BetterAuthPlugin => ({
       }
     }
   },
-});
+}) satisfies BetterAuthPlugin;

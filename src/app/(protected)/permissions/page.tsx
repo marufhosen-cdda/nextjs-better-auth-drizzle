@@ -29,14 +29,14 @@ type Permission = {
   id: string;
   name: string;
   description: string;
-  createdAt: string;
+  createdAt: Date;
 };
 
 type Role = {
   id: string;
   name: string;
   isSystem: boolean;
-  createdAt: string;
+  createdAt: Date;
 };
 
 type Modal =
@@ -67,10 +67,8 @@ export default function PermissionsPage() {
     setFetchError("");
 
     const [permRes, roleRes] = await Promise.all([
-      authClient.$fetch<{ permissions: Permission[] }>(
-        "/permission-management/list",
-      ),
-      authClient.$fetch<{ roles: Role[] }>("/role-management/list"),
+      authClient.permissionManagement.list(),
+      authClient.roleManagement.list(),
     ]);
 
     if (permRes.error) {
@@ -98,10 +96,7 @@ export default function PermissionsPage() {
     const map: Record<string, Set<string>> = {};
     await Promise.all(
       roleList.map(async (role) => {
-        const res = await authClient.$fetch<{ permissionIds: string[] }>(
-          "/permission-management/get-role-permissions",
-          { method: "POST", body: { roleId: role.id } },
-        );
+        const res = await authClient.permissionManagement.getRolePermissions({ roleId: role.id });
         map[role.id] = new Set(res.data?.permissionIds ?? []);
       }),
     );
@@ -126,10 +121,7 @@ export default function PermissionsPage() {
     setError("");
 
     if (currentlyAssigned) {
-      const { error } = await authClient.$fetch("/permission-management/remove", {
-        method: "POST",
-        body: { roleId, permissionId },
-      });
+      const { error } = await authClient.permissionManagement.remove({ roleId, permissionId });
       if (error) {
         setError(
           (error as { message?: string }).message ?? "Failed to remove permission",
@@ -145,10 +137,7 @@ export default function PermissionsPage() {
         return next;
       });
     } else {
-      const { error } = await authClient.$fetch("/permission-management/assign", {
-        method: "POST",
-        body: { roleId, permissionId },
-      });
+      const { error } = await authClient.permissionManagement.assign({ roleId, permissionId });
       if (error) {
         setError(
           (error as { message?: string }).message ?? "Failed to assign permission",
@@ -186,10 +175,7 @@ export default function PermissionsPage() {
     const name = String(form.get("name") ?? "").trim();
     const description = String(form.get("description") ?? "").trim();
 
-    const { error } = await authClient.$fetch("/permission-management/create", {
-      method: "POST",
-      body: { name, description },
-    });
+    const { error } = await authClient.permissionManagement.create({ name, description });
     if (error) {
       setError(
         (error as { message?: string }).message ?? "Failed to create permission",
@@ -206,10 +192,7 @@ export default function PermissionsPage() {
     if (modal?.type !== "delete") return;
     setPending(true);
     setError("");
-    const { error } = await authClient.$fetch("/permission-management/delete", {
-      method: "POST",
-      body: { id: modal.permission.id },
-    });
+    const { error } = await authClient.permissionManagement.delete({ id: modal.permission.id });
     if (error) {
       setError(
         (error as { message?: string }).message ?? "Failed to delete permission",

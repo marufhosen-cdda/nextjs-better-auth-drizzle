@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
 import {
   Sidebar,
   SidebarContent,
@@ -16,20 +13,29 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth-client";
 import {
-  LayoutDashboard,
-  Settings,
-  LogOut,
-  Users,
-  Shield,
+  Building2,
   ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Shield,
+  Users,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Organizations",
+    url: "/organizations",
+    icon: Building2,
   },
   {
     title: "Settings",
