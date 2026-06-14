@@ -43,7 +43,7 @@ export default function DashboardPage() {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex items-center gap-2">
-          {user.role === "ADMIN" && (
+          {user.role && user.role !== "USER" && (
             <>
               <Link
                 href="/roles"

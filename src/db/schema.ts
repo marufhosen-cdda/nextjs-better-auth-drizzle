@@ -103,25 +103,15 @@ export const role = sqliteTable("role", {
 export const permission = sqliteTable("permission", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),
-  description: text("description").default("").notNull(),
+  description: text("description"),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 });
 
-export const rolePermission = sqliteTable(
-  "role_permission",
-  {
-    id: text("id").primaryKey(),
-    roleId: text("role_id")
-      .notNull()
-      .references(() => role.id, { onDelete: "cascade" }),
-    permissionId: text("permission_id")
-      .notNull()
-      .references(() => permission.id, { onDelete: "cascade" }),
-  },
-  (table) => [
-    index("rolePermission_roleId_permissionId_idx").on(table.roleId, table.permissionId),
-  ],
-);
+export const rolePermission = sqliteTable("role_permission", {
+  id: text("id").primaryKey(),
+  roleId: text("role_id").notNull(),
+  permissionId: text("permission_id").notNull(),
+});
 
 export const twoFactor = sqliteTable(
   "two_factor",

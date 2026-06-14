@@ -44,7 +44,7 @@ export default function RolesPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
-  const isAdmin = user?.role === "ADMIN";
+  const canManage = user?.role && user?.role !== "USER";
 
   const loadRoles = useCallback(async () => {
     setLoading(true);
@@ -62,9 +62,9 @@ export default function RolesPage() {
 
   useEffect(() => {
     if (user === undefined) return;
-    if (isAdmin) loadRoles();
+    if (canManage) loadRoles();
     else setLoading(false);
-  }, [isAdmin, loadRoles, user]);
+  }, [canManage, loadRoles, user]);
 
   function openModal(m: Modal) {
     setError("");
@@ -135,7 +135,7 @@ export default function RolesPage() {
 
   if (!user) return null;
 
-  if (!isAdmin) {
+  if (!canManage) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12">
         <div className="mb-8">

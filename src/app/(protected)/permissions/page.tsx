@@ -63,7 +63,7 @@ export default function PermissionsPage() {
   const [error, setError] = useState("");
   const [toggling, setToggling] = useState<Record<string, boolean>>({});
 
-  const isAdmin = user?.role === "ADMIN";
+  const canManage = user?.role && user?.role !== "USER";
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -115,9 +115,9 @@ export default function PermissionsPage() {
 
   useEffect(() => {
     if (user === undefined) return;
-    if (isAdmin) loadData();
+    if (canManage) loadData();
     else setLoading(false);
-  }, [isAdmin, loadData, user]);
+  }, [canManage, loadData, user]);
 
   async function handleTogglePermission(
     roleId: string,
@@ -227,7 +227,7 @@ export default function PermissionsPage() {
 
   if (!user) return null;
 
-  if (!isAdmin) {
+  if (!canManage) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12">
         <div className="mb-8">
