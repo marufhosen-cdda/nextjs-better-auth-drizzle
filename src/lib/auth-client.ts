@@ -1,6 +1,7 @@
 "use client";
 import { permissionClientPlugin } from "@/plugin/permission";
 import { roleClientPlugin } from "@/plugin/role";
+import { orgLookupClientPlugin } from "@/plugin/org-lookup";
 import { organizationClient, twoFactorClient, usernameClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
@@ -13,6 +14,7 @@ export const authClient = createAuthClient({
     }),
     organizationClient(),
     roleClientPlugin(),
-    permissionClientPlugin()
+    permissionClientPlugin(),
+    orgLookupClientPlugin(),
   ],
 });

@@ -1,5 +1,6 @@
 import { permissionManagementPlugin } from "@/plugin/permission";
 import { roleManagementPlugin } from "@/plugin/role";
+import { orgLookupPlugin } from "@/plugin/org-lookup";
 import { organization } from "better-auth/plugins";
 import { captchaPlugin } from "./captcha";
 import { nextCookiesPlugin } from "./next-cookies";
@@ -32,6 +33,7 @@ export const authPlugins = [
       },
     },
   }),
+  orgLookupPlugin(),
   usernamePlugin,
   nextCookiesPlugin,
   openAPIPlugin,
