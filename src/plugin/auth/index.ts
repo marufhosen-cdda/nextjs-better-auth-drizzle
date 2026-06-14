@@ -11,7 +11,9 @@ export const authPlugins = [
   roleManagementPlugin(),
   permissionManagementPlugin(),
   organization({
-    allowUserToCreateOrganization: true,
+    allowUserToCreateOrganization: async (user) => {
+      return user?.role === "ADMIN";
+    },
     schema: {
       organization: {
         additionalFields: {
@@ -22,7 +24,7 @@ export const authPlugins = [
           },
           tenantType: {
             type: "string",
-            required: true,
+            required: false,
             default: "DOMAIN",
             choices: ["DOMAIN", "SUBDOMAIN", "DIRECTORY"],
           },

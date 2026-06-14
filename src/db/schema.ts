@@ -130,7 +130,7 @@ export const organization = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
     metadata: text("metadata"),
     domain: text("domain").unique(),
-    tenantType: text("tenant_type").notNull(),
+    tenantType: text("tenant_type"),
   },
   (table) => [uniqueIndex("organization_slug_uidx").on(table.slug)],
 );

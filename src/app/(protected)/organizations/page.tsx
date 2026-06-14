@@ -47,6 +47,8 @@ type Organization = {
   logo?: string | null;
   createdAt: Date;
   metadata?: unknown;
+  domain?: string | null;
+  tenantType?: string | null;
 };
 
 type Member = {
@@ -110,6 +112,7 @@ export default function OrganizationsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [createPending, setCreatePending] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [createTenantType, setCreateTenantType] = useState("DOMAIN");
 
   // Invite member
   const [showInvite, setShowInvite] = useState(false);
@@ -121,6 +124,7 @@ export default function OrganizationsPage() {
   const [showUpdate, setShowUpdate] = useState(false);
   const [updatePending, setUpdatePending] = useState(false);
   const [updateError, setUpdateError] = useState("");
+  const [updateTenantType, setUpdateTenantType] = useState("");
 
   // Delete org
   const [showDelete, setShowDelete] = useState(false);
@@ -182,10 +186,14 @@ export default function OrganizationsPage() {
     const form = new FormData(e.currentTarget);
     const name = String(form.get("name") ?? "").trim();
     const slug = String(form.get("slug") ?? "").trim();
+    const domain = String(form.get("domain") ?? "").trim() || undefined;
 
     const { error } = await authClient.organization.create({
       name,
       slug: slug || name.toLowerCase().replace(/\s+/g, "-"),
+      // @ts-expect-error additional fields from schema
+      domain: domain ?? null,
+      tenantType: createTenantType,
     });
 
     if (error) {
@@ -196,6 +204,7 @@ export default function OrganizationsPage() {
 
     setCreatePending(false);
     setShowCreate(false);
+    setCreateTenantType("DOMAIN");
     await refetchOrgs();
     await refetchActiveOrg();
   }
@@ -227,9 +236,11 @@ export default function OrganizationsPage() {
     const form = new FormData(e.currentTarget);
     const name = String(form.get("name") ?? "").trim();
     const slug = String(form.get("slug") ?? "").trim();
+    const domain = String(form.get("domain") ?? "").trim() || null;
 
     const { error } = await authClient.organization.update({
-      data: { name, slug },
+      // @ts-expect-error additional fields from schema
+      data: { name, slug, domain, tenantType: updateTenantType || activeOrg?.tenantType },
     });
 
     if (error) {
@@ -679,6 +690,18 @@ export default function OrganizationsPage() {
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Domain</span>
+                    <span className="font-mono text-xs">{activeOrg.domain ?? <span className="text-muted-foreground/50">—</span>}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Tenant type</span>
+                    <Badge variant="outline" className="text-xs capitalize">
+                      {activeOrg.tenantType ?? "—"}
+                    </Badge>
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Created</span>
                     <span>
                       {new Date(activeOrg.createdAt).toLocaleDateString()}
@@ -735,7 +758,7 @@ export default function OrganizationsPage() {
       {/* ── DIALOGS ── */}
 
       {/* Create Org */}
-      <Dialog open={showCreate} onOpenChange={(o) => { setShowCreate(o); setCreateError(""); }}>
+      <Dialog open={showCreate} onOpenChange={(o) => { setShowCreate(o); setCreateError(""); if (!o) setCreateTenantType("DOMAIN"); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create organization</DialogTitle>
@@ -764,6 +787,27 @@ export default function OrganizationsPage() {
               <p className="text-xs text-muted-foreground">
                 A unique identifier for your organization. Auto-generated if not provided.
               </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="org-domain">Domain (optional)</Label>
+              <Input
+                id="org-domain"
+                name="domain"
+                placeholder="acme.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="org-tenant-type">Tenant type</Label>
+              <Select value={createTenantType} onValueChange={(v) => setCreateTenantType(v ?? "DOMAIN")}>
+                <SelectTrigger id="org-tenant-type" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DOMAIN">Domain</SelectItem>
+                  <SelectItem value="SUBDOMAIN">Subdomain</SelectItem>
+                  <SelectItem value="DIRECTORY">Directory</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             {createError && (
               <p className="text-sm text-destructive">{createError}</p>
@@ -838,12 +882,12 @@ export default function OrganizationsPage() {
       </Dialog>
 
       {/* Update Org */}
-      <Dialog open={showUpdate} onOpenChange={(o) => { setShowUpdate(o); setUpdateError(""); }}>
+      <Dialog open={showUpdate} onOpenChange={(o) => { setShowUpdate(o); setUpdateError(""); if (o) setUpdateTenantType(activeOrg?.tenantType ?? "DOMAIN"); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit organization</DialogTitle>
             <DialogDescription>
-              Update the name or slug for <strong>{activeOrg?.name}</strong>.
+              Update the settings for <strong>{activeOrg?.name}</strong>.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleUpdate} className="space-y-4">
@@ -865,6 +909,31 @@ export default function OrganizationsPage() {
                 defaultValue={activeOrg?.slug ?? ""}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-domain">Domain (optional)</Label>
+              <Input
+                id="update-domain"
+                name="domain"
+                defaultValue={activeOrg?.domain ?? ""}
+                placeholder="acme.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-tenant-type">Tenant type</Label>
+              <Select
+                value={updateTenantType || activeOrg?.tenantType || "DOMAIN"}
+                onValueChange={(v) => setUpdateTenantType(v ?? "DOMAIN")}
+              >
+                <SelectTrigger id="update-tenant-type" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DOMAIN">Domain</SelectItem>
+                  <SelectItem value="SUBDOMAIN">Subdomain</SelectItem>
+                  <SelectItem value="DIRECTORY">Directory</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             {updateError && (
               <p className="text-sm text-destructive">{updateError}</p>
