@@ -1,10 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -17,8 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { ArrowLeft, Pencil, Plus, Shield, Trash2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { Pencil, Plus, Shield, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 type Role = {
   id: string;
@@ -137,16 +135,7 @@ export default function RolesPage() {
 
   if (!canManage) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-12">
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-          >
-            <ArrowLeft className="mr-1.5 h-4 w-4" />
-            Dashboard
-          </Link>
-        </div>
+      <div className="px-6 py-8">
         <Card>
           <CardHeader>
             <CardTitle>Access denied</CardTitle>
@@ -158,22 +147,14 @@ export default function RolesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
+    <div className="px-6 py-8">
       <div className="mb-8 flex items-center justify-between">
-        <Link
-          href="/dashboard"
-          className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-        >
-          <ArrowLeft className="mr-1.5 h-4 w-4" />
-          Dashboard
-        </Link>
+        <h1 className="text-2xl font-semibold">Roles</h1>
         <Button size="sm" onClick={() => openModal({ type: "create" })}>
           <Plus className="mr-1.5 h-4 w-4" />
           New role
         </Button>
       </div>
-
-      <h1 className="mb-6 text-2xl font-semibold">Roles</h1>
 
       {fetchError && <p className="mb-4 text-sm text-destructive">{fetchError}</p>}
 

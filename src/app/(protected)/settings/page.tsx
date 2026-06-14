@@ -1,15 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -18,8 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, ShieldCheck, ShieldOff, Copy, CheckCheck } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { authClient } from "@/lib/auth-client";
+import { CheckCheck, Copy, ShieldCheck, ShieldOff } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { useState } from "react";
 
 type Step = "idle" | "password" | "qr" | "verify" | "backup-codes" | "disable";
 
@@ -125,15 +123,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
-      <div className="mb-8 flex items-center gap-3">
-        <Link href="/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" />
-          Dashboard
-        </Link>
-      </div>
-
-      <h1 className="mb-6 text-2xl font-semibold">Settings</h1>
+    <div className="px-6 py-8">
+      <h1 className="mb-8 text-2xl font-semibold">Settings</h1>
 
       {/* Profile card */}
       <Card className="mb-4">

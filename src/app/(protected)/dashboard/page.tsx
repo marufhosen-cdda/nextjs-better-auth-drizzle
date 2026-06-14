@@ -1,19 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Settings, LogOut, ShieldCheck, ShieldOff, Users, Shield } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
+import { ShieldCheck, ShieldOff } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
-  const router = useRouter();
   const { data: sessionData } = authClient.useSession();
   const user = sessionData?.user as {
     id: string;
@@ -23,11 +18,6 @@ export default function DashboardPage() {
     twoFactorEnabled?: boolean;
     role?: string;
   } | undefined;
-
-  async function handleSignOut() {
-    await authClient.signOut();
-    router.push("/sign-in");
-  }
 
   if (!user) return null;
 
@@ -39,41 +29,8 @@ export default function DashboardPage() {
     .slice(0, 2);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <div className="flex items-center gap-2">
-          {user.role && user.role !== "USER" && (
-            <>
-              <Link
-                href="/roles"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-              >
-                <Users className="mr-1.5 h-4 w-4" />
-                Roles
-              </Link>
-              <Link
-                href="/permissions"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-              >
-                <Shield className="mr-1.5 h-4 w-4" />
-                Permissions
-              </Link>
-            </>
-          )}
-          <Link
-            href="/settings"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-          >
-            <Settings className="mr-1.5 h-4 w-4" />
-            Settings
-          </Link>
-          <Button variant="ghost" size="sm" onClick={handleSignOut}>
-            <LogOut className="mr-1.5 h-4 w-4" />
-            Sign out
-          </Button>
-        </div>
-      </div>
+    <div className="px-6 py-8">
+      <h1 className="mb-8 text-2xl font-semibold">Dashboard</h1>
 
       <Card>
         <CardHeader>

@@ -1,10 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -16,17 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Shield,
   Loader2,
+  Plus,
+  Shield,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 type Permission = {
   id: string;
@@ -79,7 +76,7 @@ export default function PermissionsPage() {
     if (permRes.error) {
       setFetchError(
         (permRes.error as { message?: string }).message ??
-          "Failed to load permissions",
+        "Failed to load permissions",
       );
       setLoading(false);
       return;
@@ -101,9 +98,9 @@ export default function PermissionsPage() {
     const map: Record<string, Set<string>> = {};
     await Promise.all(
       roleList.map(async (role) => {
-        const res = await      authClient.$fetch<{ permissionIds: string[] }>(
-        "/permission-management/get-role-permissions",
-        { method: "POST", body: { roleId: role.id } },
+        const res = await authClient.$fetch<{ permissionIds: string[] }>(
+          "/permission-management/get-role-permissions",
+          { method: "POST", body: { roleId: role.id } },
         );
         map[role.id] = new Set(res.data?.permissionIds ?? []);
       }),
@@ -229,16 +226,7 @@ export default function PermissionsPage() {
 
   if (!canManage) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-12">
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-          >
-            <ArrowLeft className="mr-1.5 h-4 w-4" />
-            Dashboard
-          </Link>
-        </div>
+      <div className="px-6 py-8">
         <Card>
           <CardHeader>
             <CardTitle>Access denied</CardTitle>
@@ -252,22 +240,15 @@ export default function PermissionsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="px-6 py-8">
       <div className="mb-8 flex items-center justify-between">
-        <Link
-          href="/dashboard"
-          className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-        >
-          <ArrowLeft className="mr-1.5 h-4 w-4" />
-          Dashboard
-        </Link>
+        <h1 className="text-2xl font-semibold">Permissions</h1>
         <Button size="sm" onClick={() => openModal({ type: "create" })}>
           <Plus className="mr-1.5 h-4 w-4" />
           New permission
         </Button>
       </div>
 
-      <h1 className="mb-2 text-2xl font-semibold">Permissions</h1>
       <p className="mb-6 text-sm text-muted-foreground">
         Assign granular permissions to each role. Use the{" "}
         <code className="rounded bg-muted px-1 py-0.5 text-xs">
@@ -281,6 +262,40 @@ export default function PermissionsPage() {
       )}
       {error && (
         <p className="mb-4 text-sm text-destructive">{error}</p>
+      )}
+
+      {/* Summary cards for each role */}
+      {!loading && roles.length > 0 && (
+        <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {roles.map((role) => {
+            const assigned =
+              rolePermissionsMap[role.id]?.size ?? 0;
+            return (
+              <Card key={role.id}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    {role.isSystem && (
+                      <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <CardTitle className="text-base">{role.name}</CardTitle>
+                    {role.isSystem && (
+                      <Badge variant="secondary" className="text-xs">
+                        System
+                      </Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="text-foreground font-medium">{assigned}</span>{" "}
+                    of <span className="text-foreground font-medium">{permissions.length}</span>{" "}
+                    permissions assigned
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       )}
 
       {loading ? (
@@ -386,39 +401,6 @@ export default function PermissionsPage() {
         </div>
       )}
 
-      {/* Summary cards for each role */}
-      {!loading && roles.length > 0 && (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {roles.map((role) => {
-            const assigned =
-              rolePermissionsMap[role.id]?.size ?? 0;
-            return (
-              <Card key={role.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    {role.isSystem && (
-                      <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                    )}
-                    <CardTitle className="text-base">{role.name}</CardTitle>
-                    {role.isSystem && (
-                      <Badge variant="secondary" className="text-xs">
-                        System
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    <span className="text-foreground font-medium">{assigned}</span>{" "}
-                    of <span className="text-foreground font-medium">{permissions.length}</span>{" "}
-                    permissions assigned
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
 
       {/* Create dialog */}
       <Dialog

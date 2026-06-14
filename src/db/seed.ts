@@ -1,11 +1,11 @@
 import { generateId } from "better-auth";
+import { Database } from "bun:sqlite";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/bun-sqlite";
-import { Database } from "bun:sqlite";
 import path from "node:path";
-import * as schema from "./schema";
+import { DEFAULT_ROLE_PERMISSIONS, SYSTEM_PERMISSIONS } from "../plugin/permission/constants";
 import { SYSTEM_ROLES } from "../plugin/role/constants";
-import { SYSTEM_PERMISSIONS, DEFAULT_ROLE_PERMISSIONS } from "../plugin/permission/constants";
+import * as schema from "./schema";
 
 const LOCAL_DB_PATH = path.resolve(
   ".wrangler/state/v3/d1/miniflare-D1DatabaseObject/b0946ac9e9f26f798f3603bc6e570ef94fe23c112b9ed581d6f3cedfa6ff08e1.sqlite",

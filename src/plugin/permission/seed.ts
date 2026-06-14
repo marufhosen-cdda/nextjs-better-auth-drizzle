@@ -1,5 +1,5 @@
 import type { AuthContext } from "better-auth";
-import { SYSTEM_PERMISSIONS, DEFAULT_ROLE_PERMISSIONS } from "./constants";
+import { DEFAULT_ROLE_PERMISSIONS, SYSTEM_PERMISSIONS } from "./constants";
 
 export async function seedPermissions(ctx: AuthContext) {
   const adapter = ctx.adapter;
